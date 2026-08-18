@@ -58,8 +58,6 @@
             z-index: 9999;
             user-select: none;
             animation: pawFade 0.8s ease-out forwards;
-            
-            /* CSS Filter tinting the cursor emoji to warm amber/brown! */
             filter: sepia(100%) hue-rotate(330deg) saturate(350%) brightness(0.85);
         }
 
@@ -71,6 +69,30 @@
             100% {
                 opacity: 0;
                 transform: translate(-50%, -50%) scale(0.5) rotate(var(--paw-rotate));
+            }
+        }
+
+        /* DROPPING BONE ANIMATION */
+        .falling-bone {
+            position: fixed;
+            pointer-events: none;
+            font-size: 24px;
+            z-index: 9999;
+            user-select: none;
+            animation: boneFall 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes boneFall {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, 0) scale(1) rotate(0deg);
+            }
+            70% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(-50% + var(--drift-x)), 140px) scale(0.7) rotate(var(--spin));
             }
         }
     </style>
@@ -161,14 +183,25 @@
             </div>
             
             <div class="relative">
-                <div class="float-anim">
-                    <div class="w-full aspect-square max-w-sm mx-auto rounded-3xl overflow-hidden shadow-2xl shadow-amber-200">
-                        <img id="yt-pfp-2" alt="Noah & Buzz" class="w-full h-full object-cover" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAMCAgoICgoKCwsKDQsKCgoKCgoKCggKCgoKCAgICgoKCgoKCAoKCAoKCggICAoKCggICgoKCAgLDQoKDQoICggBAwQEBgUGCgYGCg8NCg0PDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDf/AABEIALAAsAMBEQACEQEDEQH/xAAdAAACAgMBAQE────────">
+                <div class="float-anim relative">
+                    <!-- INTERACTIVE BIG PICTURE CONTAINER -->
+                    <div id="pfp-container-2" class="w-full aspect-square max-w-sm mx-auto rounded-3xl overflow-hidden shadow-2xl shadow-amber-200 cursor-pointer select-none relative group" title="Click to feed Buzz a bone! 🦴">
+                        <img id="yt-pfp-2" alt="Noah & Buzz" class="w-full h-full object-cover pointer-events-none transition-transform duration-150 active:scale-95 group-hover:scale-105" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAMCAgoICgoKCwsKDQsKCgoKCgoKCggKCgoKCAgICgoKCgoKCAoKCAoKCggICAoKCggICgoKCAgLDQoKDQoICggBAwQEBgUGCgYGCg8NCg0PDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDf/AABEIALAAsAMBEQACEQEDEQH/xAAdAAACAgMBAQE────────">
                     </div>
-                </div>
-                <div class="absolute -bottom-4 -left-4 bg-white rounded-2xl px-4 py-3 shadow-xl border border-amber-100 z-10">
-                    <div class="text-xs text-amber-600 font-semibold uppercase tracking-wider mb-0.5">Channel Vibe</div>
-                    <div class="text-sm font-bold text-[#1C1008]">Cute · Funny · Wholesome <span class="themed-paw">🐾</span></div>
+
+                    <!-- TOP RIGHT EDGE BADGE: PERSISTENT BONE COUNTER -->
+                    <div class="absolute -top-6 -right-4 bg-white rounded-2xl px-4 py-3 shadow-xl border border-amber-100 z-10 flex flex-col items-end">
+                        <div class="text-xs text-amber-600 font-semibold uppercase tracking-wider mb-0.5">Treats Given</div>
+                        <div class="text-sm font-bold text-[#1C1008] flex items-center gap-1.5">
+                            <span>🦴</span> <span id="bone-count" class="text-[#C4722A]">0</span>
+                        </div>
+                    </div>
+
+                    <!-- BOTTOM LEFT EDGE BADGE: CHANNEL VIBE -->
+                    <div class="absolute -bottom-4 -left-4 bg-white rounded-2xl px-4 py-3 shadow-xl border border-amber-100 z-10">
+                        <div class="text-xs text-amber-600 font-semibold uppercase tracking-wider mb-0.5">Channel Vibe</div>
+                        <div class="text-sm font-bold text-[#1C1008]">Cute · Funny · Wholesome <span class="themed-paw">🐾</span></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -285,7 +318,7 @@
         <p>© 2026 Noah & Buzz · <span class="text-amber-400">@The_Goofy_Shiba</span> · Made with <span class="themed-paw">🐾</span></p>
     </footer>
 
-    <!-- LIVE YOUTUBE DATA, CLOCK, AND DIRECTIONAL PAW TRAIL SCRIPT -->
+    <!-- MAIN INTERACTIVE SCRIPT -->
     <script>
         // 1. LIVE CLOCK SCRIPT (MDT / Edmonton Time)
         function updateClock() {
@@ -329,7 +362,6 @@
                 console.error("Oopsie! Failed to fetch live channel stats 🥺", err);
             }
         }
-
         fetchLiveStats();
 
         // 3. CURSOR DIRECTION-BASED PAW TRAIL SCRIPT
@@ -341,11 +373,8 @@
             const deltaY = e.clientY - lastY;
             const dist = Math.hypot(deltaX, deltaY);
 
-            // Distance threshold so prints don't cluster too tightly
             if (dist < 28) return; 
 
-            // Calculate movement angle in degrees
-            // Adding 90 deg offsets the default upright 🐾 emoji orientation
             const angleRad = Math.atan2(deltaY, deltaX);
             const angleDeg = (angleRad * (180 / Math.PI)) + 90;
 
@@ -355,19 +384,97 @@
             const paw = document.createElement('div');
             paw.className = 'paw-print';
             paw.textContent = '🐾';
-            
-            // Set rotation variable based on cursor direction
             paw.style.setProperty('--paw-rotate', `${angleDeg}deg`);
             paw.style.left = e.clientX + 'px';
             paw.style.top = e.clientY + 'px';
 
             document.body.appendChild(paw);
 
-            // Clean up DOM after fade out
             setTimeout(() => {
                 paw.remove();
             }, 800);
         });
+
+        // 4. PERSISTENT & REAL-TIME TAB-SYNCED BONE COUNTER
+        const boneCountSpan = document.getElementById('bone-count');
+        const pfpContainer2 = document.getElementById('pfp-container-2');
+        const COUNTER_KEY = "noah_and_buzz_treat_counter_2026";
+
+        // Broadcast Channel allows open tabs in the same browser to communicate live!
+        const treatChannel = new BroadcastChannel('treat_sync_channel');
+
+        function getStoredCount() {
+            return parseInt(localStorage.getItem(COUNTER_KEY) || '0', 10);
+        }
+
+        function updateDisplay(val) {
+            if (boneCountSpan) {
+                boneCountSpan.textContent = val.toLocaleString();
+            }
+        }
+
+        // Initialize display with freshest saved value
+        let currentTreats = getStoredCount();
+        updateDisplay(currentTreats);
+
+        // Listen for live click broadcasts from OTHER open tabs
+        treatChannel.onmessage = (event) => {
+            if (event.data && typeof event.data.count === 'number') {
+                currentTreats = event.data.count;
+                updateDisplay(currentTreats);
+            }
+        };
+
+        // Listen for direct localStorage changes across tabs
+        window.addEventListener('storage', (e) => {
+            if (e.key === COUNTER_KEY) {
+                currentTreats = parseInt(e.newValue || '0', 10);
+                updateDisplay(currentTreats);
+            }
+        });
+
+        function addTreat() {
+            // Always compare with latest stored count to prevent lower count overwrites!
+            const latestCount = Math.max(getStoredCount(), currentTreats);
+            currentTreats = latestCount + 1;
+            
+            // Save to LocalStorage
+            localStorage.setItem(COUNTER_KEY, currentTreats);
+            
+            // Broadcast new count to all other open tabs in real-time
+            treatChannel.postMessage({ count: currentTreats });
+            
+            updateDisplay(currentTreats);
+        }
+
+        // Photo frame click event + falling bone animation
+        if (pfpContainer2) {
+            pfpContainer2.addEventListener('click', function(e) {
+                addTreat();
+
+                const numBones = 2;
+                for (let i = 0; i < numBones; i++) {
+                    const bone = document.createElement('div');
+                    bone.className = 'falling-bone';
+                    bone.textContent = '🦴';
+                    
+                    const driftX = (Math.random() * 80 - 40) + 'px';
+                    const spin = (Math.random() * 360 - 180) + 'deg';
+                    
+                    bone.style.setProperty('--drift-x', driftX);
+                    bone.style.setProperty('--spin', spin);
+                    
+                    bone.style.left = (e.clientX + (Math.random() * 20 - 10)) + 'px';
+                    bone.style.top = (e.clientY + (Math.random() * 10 - 5)) + 'px';
+
+                    document.body.appendChild(bone);
+
+                    setTimeout(() => {
+                        bone.remove();
+                    }, 1200);
+                }
+            });
+        }
     </script>
 </body>
 </html>
