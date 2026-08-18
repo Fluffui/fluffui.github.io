@@ -43,6 +43,36 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-8px); }
         }
+
+        /* TINT FILTER FOR STATIC PAW EMOJIS */
+        .themed-paw {
+            display: inline-block;
+            filter: sepia(100%) hue-rotate(330deg) saturate(350%) brightness(0.85);
+        }
+
+        /* FILTERED PAW TRAIL STYLES FOR SHIBA THEME */
+        .paw-print {
+            position: fixed;
+            pointer-events: none;
+            font-size: 18px;
+            z-index: 9999;
+            user-select: none;
+            animation: pawFade 0.8s ease-out forwards;
+            
+            /* CSS Filter tinting the cursor emoji to warm amber/brown! */
+            filter: sepia(100%) hue-rotate(330deg) saturate(350%) brightness(0.85);
+        }
+
+        @keyframes pawFade {
+            0% {
+                opacity: 0.9;
+                transform: translate(-50%, -50%) scale(1) rotate(var(--paw-rotate));
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5) rotate(var(--paw-rotate));
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen bg-[#FDFAF5] text-[#1C1008]" style="font-family: Inter, sans-serif;">
@@ -52,7 +82,7 @@
         <div class="w-full flex justify-between items-center">
             <!-- Left: Website Name / Branding -->
             <div class="flex items-center gap-2">
-                <span class="text-xl">🐾</span>
+                <span class="text-xl themed-paw">🐾</span>
                 <span class="font-black text-lg md:text-xl tracking-tight text-[#1C1008]">
                     Noah & Buzz <span class="text-[#C4722A] font-light">|</span> <span class="text-sm font-semibold text-amber-700 uppercase tracking-wider">ShibaTube</span>
                 </span>
@@ -88,7 +118,7 @@
             </div>
             
             <p class="text-lg md:text-xl text-[#6B4C2A] font-medium mb-2 mt-4 max-w-md">The Goofy Shiba</p>
-            <p class="text-base text-[#8C6A45] max-w-lg leading-relaxed mb-10">One chaotic, adorable Shiba Inu bringing you the goofiest moments in dog content.<span class="font-semibold text-amber-700"> Sub to make Shiba happy. 🐾</span></p>
+            <p class="text-base text-[#8C6A45] max-w-lg leading-relaxed mb-10">One chaotic, adorable Shiba Inu bringing you the goofiest moments in dog content. <span class="font-semibold text-amber-700">Sub to make Shiba happy. <span class="themed-paw">🐾</span></span></p>
             
             <a class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-red-500 hover:bg-red-600 text-white font-bold text-base shadow-lg shadow-red-200 transition-all duration-200 hover:scale-105 hover:shadow-xl hover:shadow-red-300 mb-4" href="https://youtube.com/@The_Goofy_Shiba" rel="noopener noreferrer" target="_blank">
                 <svg class="w-5 h-5" fill="white" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"></path></svg>
@@ -126,8 +156,8 @@
             <div>
                 <span class="text-xs font-semibold tracking-[0.2em] uppercase text-amber-600 mb-4 block">About the Channel</span>
                 <h2 class="text-4xl md:text-5xl font-black text-[#1C1008] leading-tight mb-6">Double the fluff,<br><span class="text-[#C4722A]">double the chaos.</span></h2>
-                <p class="text-[#6B4C2A] leading-relaxed mb-4 text-base">Welcome to our YouTube channel, where we document the daily life of a Shiba Inu named Baozi or Buzz. Baozi is a lively and adorable Shiba Inu. On our channel, you'll see heartwarming moments of Baozi exploring new environments, learning new skills, and interacting with his family.</p>
-                <p class="text-[#8C6A45] leading-relaxed text-base">We hope these videos bring you joy and relaxation, while also helping more people understand the unique qualities of the Shiba Inu breed. Thank you for subscribing and supporting us. Let's follow Baozi on a journey filled with laughter and love! 🐾</p>
+                <p class="text-[#6B4C2A] leading-relaxed mb-4 text-base">Welcome to our YouTube channel, where we document the daily life of a Shiba Inu named Baozi or Buzz. Baozi is a lively and adorable Shiba Inu. On our channel, you'll see heartwarming (W Speed ❤️‍acyl) moments of Baozi exploring new environments, learning new skills, and interacting with his family.</p>
+                <p class="text-[#8C6A45] leading-relaxed text-base">We hope these videos bring you joy and relaxation, while also helping more people understand the unique qualities of the Shiba Inu breed. Thank you for subscribing and supporting us. Let's follow Baozi on a journey filled with laughter and love! <span class="themed-paw">🐾</span></p>
             </div>
             
             <div class="relative">
@@ -138,7 +168,7 @@
                 </div>
                 <div class="absolute -bottom-4 -left-4 bg-white rounded-2xl px-4 py-3 shadow-xl border border-amber-100 z-10">
                     <div class="text-xs text-amber-600 font-semibold uppercase tracking-wider mb-0.5">Channel Vibe</div>
-                    <div class="text-sm font-bold text-[#1C1008]">Cute · Funny · Wholesome 🐾</div>
+                    <div class="text-sm font-bold text-[#1C1008]">Cute · Funny · Wholesome <span class="themed-paw">🐾</span></div>
                 </div>
             </div>
         </div>
@@ -252,10 +282,10 @@
 
     <!-- FOOTER -->
     <footer class="bg-[#1C1008] text-amber-200/60 py-8 text-center text-sm">
-        <p>© 2026 Noah & Buzz · <span class="text-amber-400">@The_Goofy_Shiba</span> · Made with 🐾</p>
+        <p>© 2026 Noah & Buzz · <span class="text-amber-400">@The_Goofy_Shiba</span> · Made with <span class="themed-paw">🐾</span></p>
     </footer>
 
-    <!-- LIVE YOUTUBE DATA & CLOCK SCRIPT -->
+    <!-- LIVE YOUTUBE DATA, CLOCK, AND DIRECTIONAL PAW TRAIL SCRIPT -->
     <script>
         // 1. LIVE CLOCK SCRIPT (MDT / Edmonton Time)
         function updateClock() {
@@ -301,6 +331,43 @@
         }
 
         fetchLiveStats();
+
+        // 3. CURSOR DIRECTION-BASED PAW TRAIL SCRIPT
+        let lastX = 0;
+        let lastY = 0;
+
+        document.addEventListener('mousemove', function(e) {
+            const deltaX = e.clientX - lastX;
+            const deltaY = e.clientY - lastY;
+            const dist = Math.hypot(deltaX, deltaY);
+
+            // Distance threshold so prints don't cluster too tightly
+            if (dist < 28) return; 
+
+            // Calculate movement angle in degrees
+            // Adding 90 deg offsets the default upright 🐾 emoji orientation
+            const angleRad = Math.atan2(deltaY, deltaX);
+            const angleDeg = (angleRad * (180 / Math.PI)) + 90;
+
+            lastX = e.clientX;
+            lastY = e.clientY;
+
+            const paw = document.createElement('div');
+            paw.className = 'paw-print';
+            paw.textContent = '🐾';
+            
+            // Set rotation variable based on cursor direction
+            paw.style.setProperty('--paw-rotate', `${angleDeg}deg`);
+            paw.style.left = e.clientX + 'px';
+            paw.style.top = e.clientY + 'px';
+
+            document.body.appendChild(paw);
+
+            // Clean up DOM after fade out
+            setTimeout(() => {
+                paw.remove();
+            }, 800);
+        });
     </script>
 </body>
 </html>
