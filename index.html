@@ -341,29 +341,36 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // 2. HELPER TO CROPPING PFP IMAGE INTO A PERFECT CIRCLE FAVICON
+        // 2. HELPER TO CROP PFP IMAGE INTO A CIRCLE (WITH CORS PROXY FOR GITHUB PAGES)
         function makeCircularFavicon(imgUrl, callback) {
             const img = new Image();
             img.crossOrigin = 'Anonymous';
+            
             img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const size = 128;
-                canvas.width = size;
-                canvas.height = size;
-                const ctx = canvas.getContext('2d');
+                try {
+                    const canvas = document.createElement('canvas');
+                    const size = 128;
+                    canvas.width = size;
+                    canvas.height = size;
+                    const ctx = canvas.getContext('2d');
 
-                ctx.beginPath();
-                ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-                ctx.closePath();
-                ctx.clip();
+                    ctx.beginPath();
+                    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+                    ctx.closePath();
+                    ctx.clip();
 
-                ctx.drawImage(img, 0, 0, size, size);
-                callback(canvas.toDataURL('image/png'));
+                    ctx.drawImage(img, 0, 0, size, size);
+                    callback(canvas.toDataURL('image/png'));
+                } catch (e) {
+                    console.warn("Canvas export blocked by CORS on GitHub ~ using fallback 🐾", e);
+                }
             };
-            img.src = imgUrl;
+
+            // Route through CORS proxy so GitHub Pages can process the canvas
+            img.src = `https://api.allorigins.win/raw?url=${encodeURIComponent(imgUrl)}`;
         }
 
-        // 3. YOUTUBE API SCRIPT (UPDATES PAGE STATS + CIRCULAR TAB FAVICON!)
+        // 3. YOUTUBE API SCRIPT
         const API_KEY = 'AIzaSyCmbRq4AbY_RYUBJ6WvRw71ADHxihVX0xE';
         const CHANNEL_ID = 'UCbVsqZ_JwuZnv50wAkDe1Eg';
 
@@ -385,7 +392,7 @@
                     document.getElementById('yt-pfp-1').src = pfpUrl;
                     document.getElementById('yt-pfp-2').src = pfpUrl;
 
-                    // Dynamically crop and set browser tab logo (favicon) to a CIRCULAR YouTube PFP!
+                    // Crop YouTube PFP safely for GitHub Pages!
                     makeCircularFavicon(pfpUrl, (circleIconDataUrl) => {
                         const favicon = document.getElementById('favicon');
                         if (favicon) {
@@ -435,7 +442,6 @@
         const pfpContainer2 = document.getElementById('pfp-container-2');
         const COUNTER_KEY = "noah_and_buzz_treat_counter_2026";
 
-        // Broadcast Channel allows open tabs in the same browser to communicate live!
         const treatChannel = new BroadcastChannel('treat_sync_channel');
 
         function getStoredCount() {
@@ -448,11 +454,9 @@
             }
         }
 
-        // Initialize display strictly with saved storage value (or 0 if empty)
         let currentTreats = getStoredCount();
         updateDisplay(currentTreats);
 
-        // Listen for live click broadcasts from OTHER open tabs
         treatChannel.onmessage = (event) => {
             if (event.data && typeof event.data.count === 'number') {
                 currentTreats = event.data.count;
@@ -460,7 +464,6 @@
             }
         };
 
-        // Listen for direct localStorage changes across tabs
         window.addEventListener('storage', (e) => {
             if (e.key === COUNTER_KEY) {
                 currentTreats = parseInt(e.newValue || '0', 10);
@@ -469,20 +472,14 @@
         });
 
         function addTreat() {
-            // Compare with latest stored count to keep tabs synced correctly
             const latestCount = Math.max(getStoredCount(), currentTreats);
             currentTreats = latestCount + 1;
             
-            // Save to LocalStorage
             localStorage.setItem(COUNTER_KEY, currentTreats);
-            
-            // Broadcast new count to all other open tabs in real-time
             treatChannel.postMessage({ count: currentTreats });
-            
             updateDisplay(currentTreats);
         }
 
-        // Photo frame click event + falling bone animation
         if (pfpContainer2) {
             pfpContainer2.addEventListener('click', function(e) {
                 addTreat();
