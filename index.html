@@ -341,10 +341,10 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // 2. HELPER TO CROP PFP IMAGE INTO A CIRCLE (WITH CORS PROXY FOR GITHUB PAGES)
+        // 2. HELPER TO CROP PFP IMAGE INTO A CIRCLE (NATIVE YOUTUBE CDN CORS)
         function makeCircularFavicon(imgUrl, callback) {
             const img = new Image();
-            img.crossOrigin = 'Anonymous';
+            img.crossOrigin = 'anonymous'; // Native cross-origin support from YouTube CDN!
             
             img.onload = () => {
                 try {
@@ -362,12 +362,12 @@
                     ctx.drawImage(img, 0, 0, size, size);
                     callback(canvas.toDataURL('image/png'));
                 } catch (e) {
-                    console.warn("Canvas export blocked by CORS on GitHub ~ using fallback 🐾", e);
+                    console.warn("Canvas export blocked ~ using fallback 🐾", e);
                 }
             };
 
-            // Route through CORS proxy so GitHub Pages can process the canvas
-            img.src = `https://api.allorigins.win/raw?url=${encodeURIComponent(imgUrl)}`;
+            // Load direct YouTube thumbnail URL directly without proxy
+            img.src = imgUrl;
         }
 
         // 3. YOUTUBE API SCRIPT
@@ -392,7 +392,7 @@
                     document.getElementById('yt-pfp-1').src = pfpUrl;
                     document.getElementById('yt-pfp-2').src = pfpUrl;
 
-                    // Crop YouTube PFP safely for GitHub Pages!
+                    // Crop YouTube PFP safely without proxy errors!
                     makeCircularFavicon(pfpUrl, (circleIconDataUrl) => {
                         const favicon = document.getElementById('favicon');
                         if (favicon) {
